@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar, Briefcase, GraduationCap } from 'lucide-react';
 
@@ -9,7 +8,7 @@ const Experience = () => {
     {
       title: "Intern",
       company: "Allianz Cloud",
-      period: "Current",
+      period: "2024 - Present",
       description: [
         "Focus on AI in Cybersecurity",
         "Worked on AI-driven threat detection models",
