@@ -9,9 +9,15 @@ const Hero = () => {
       <SpaceBackground />
       
       <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center">
-        <div className="mb-16 animate-fade-in" style={{animationDelay: '0.3s'}}>
+        <div className="mb-8 animate-fade-in" style={{animationDelay: '0.3s'}}>
           <p className="text-gold italic text-3xl md:text-4xl lg:text-5xl">
             "In pursuit of the unknown"
+          </p>
+        </div>
+        
+        <div className="mb-8 animate-fade-in" style={{animationDelay: '0.4s'}}>
+          <p className="text-white italic text-2xl md:text-3xl">
+            "telling machines what to do"
           </p>
         </div>
           
