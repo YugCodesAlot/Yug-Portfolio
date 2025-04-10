@@ -21,13 +21,30 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
     
-    // Create Earth globe
-    const earthGeometry = new THREE.SphereGeometry(2, 32, 32);
+    // Create Earth globe with higher resolution
+    const earthGeometry = new THREE.SphereGeometry(2, 64, 64);
     
     // Load Earth textures
     const textureLoader = new THREE.TextureLoader();
     
-    // Create Earth material with a blue/teal base and gold highlights
+    // Create Earth texture promises
+    const earthMapPromise = new Promise<THREE.Texture>((resolve) => {
+      textureLoader.load('/earth_map.jpg', (texture) => resolve(texture));
+    });
+    
+    const bumpMapPromise = new Promise<THREE.Texture>((resolve) => {
+      textureLoader.load('/earth_bump.jpg', (texture) => resolve(texture));
+    });
+    
+    const specularMapPromise = new Promise<THREE.Texture>((resolve) => {
+      textureLoader.load('/earth_specular.jpg', (texture) => resolve(texture));
+    });
+    
+    const cloudMapPromise = new Promise<THREE.Texture>((resolve) => {
+      textureLoader.load('/earth_clouds.jpg', (texture) => resolve(texture));
+    });
+    
+    // Create Earth material and add to the scene
     const earthMaterial = new THREE.MeshPhongMaterial({
       color: 0x1a4d6e,
       specular: 0xD4AF37,
@@ -37,11 +54,12 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       transparent: true
     });
     
+    // Create Earth mesh and add to scene
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
     scene.add(earth);
     
     // Add atmosphere glow effect
-    const atmosphereGeometry = new THREE.SphereGeometry(2.1, 32, 32);
+    const atmosphereGeometry = new THREE.SphereGeometry(2.1, 64, 64);
     const atmosphereMaterial = new THREE.MeshPhongMaterial({
       color: 0x4a7fb5,
       side: THREE.BackSide,
@@ -53,16 +71,28 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
     scene.add(atmosphere);
     
     // Create a wireframe overlay
-    const wireframeGeometry = new THREE.SphereGeometry(2.05, 16, 16);
+    const wireframeGeometry = new THREE.SphereGeometry(2.05, 32, 32);
     const wireframeMaterial = new THREE.MeshBasicMaterial({ 
       color: 0xD4AF37, 
       wireframe: true, 
       transparent: true, 
-      opacity: 0.2 
+      opacity: 0.15 
     });
     
     const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
     scene.add(wireframe);
+    
+    // Create a cloud layer
+    const cloudGeometry = new THREE.SphereGeometry(2.15, 64, 64);
+    const cloudMaterial = new THREE.MeshPhongMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.15,
+      blending: THREE.AdditiveBlending
+    });
+    
+    const clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+    scene.add(clouds);
     
     // Create particles (stars)
     const particlesGeometry = new THREE.BufferGeometry();
@@ -89,9 +119,30 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     
-    const pointLight = new THREE.PointLight(0xD4AF37, 1);
-    pointLight.position.set(5, 3, 5);
-    scene.add(pointLight);
+    const pointLight1 = new THREE.PointLight(0xffffff, 1);
+    pointLight1.position.set(5, 3, 5);
+    scene.add(pointLight1);
+    
+    const pointLight2 = new THREE.PointLight(0xD4AF37, 0.8);
+    pointLight2.position.set(-5, -3, 2);
+    scene.add(pointLight2);
+    
+    // Apply textures when they load
+    Promise.all([earthMapPromise, bumpMapPromise, specularMapPromise, cloudMapPromise])
+      .then(([earthMap, bumpMap, specularMap, cloudMap]) => {
+        // Apply textures to earth
+        earthMaterial.map = earthMap;
+        earthMaterial.bumpMap = bumpMap;
+        earthMaterial.specularMap = specularMap;
+        
+        // Apply cloud texture
+        cloudMaterial.map = cloudMap;
+        cloudMaterial.alphaMap = cloudMap;
+      })
+      .catch(error => {
+        console.error("Error loading textures:", error);
+        // Fallback if textures fail to load
+      });
     
     // Position camera
     camera.position.z = 6;
@@ -129,6 +180,7 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       earth.rotation.y += 0.001;
       wireframe.rotation.y += 0.001;
       atmosphere.rotation.y += 0.001;
+      clouds.rotation.y += 0.0005; // Clouds rotate slightly slower
       
       // Respond to mouse movement
       earth.rotation.y += (targetX - earth.rotation.y) * 0.03;
@@ -137,6 +189,8 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       wireframe.rotation.x = earth.rotation.x;
       atmosphere.rotation.y = earth.rotation.y;
       atmosphere.rotation.x = earth.rotation.x;
+      clouds.rotation.y = earth.rotation.y * 0.95; // Slight differential rotation for clouds
+      clouds.rotation.x = earth.rotation.x * 0.95;
       
       // Slowly rotate particles
       particlesMesh.rotation.y += 0.0003;
@@ -155,17 +209,20 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       scene.remove(earth);
       scene.remove(wireframe);
       scene.remove(atmosphere);
+      scene.remove(clouds);
       scene.remove(particlesMesh);
       
       // Dispose geometries and materials
       earthGeometry.dispose();
       wireframeGeometry.dispose();
       atmosphereGeometry.dispose();
+      cloudGeometry.dispose();
       particlesGeometry.dispose();
       
       earthMaterial.dispose();
       wireframeMaterial.dispose();
       atmosphereMaterial.dispose();
+      cloudMaterial.dispose();
       particlesMaterial.dispose();
       
       renderer.dispose();
