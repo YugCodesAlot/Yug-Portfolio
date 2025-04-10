@@ -21,22 +21,56 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
     
-    // Gold color material
-    const goldMaterial = new THREE.MeshStandardMaterial({ 
-      color: 0xD4AF37,
-      metalness: 0.8,
-      roughness: 0.3,
-      emissive: 0x4A3903,
-      emissiveIntensity: 0.2
+    // Create Earth globe
+    const earthGeometry = new THREE.SphereGeometry(2, 32, 32);
+    
+    // Load Earth textures
+    const textureLoader = new THREE.TextureLoader();
+    
+    // Create Earth material with a blue/teal base and gold highlights
+    const earthMaterial = new THREE.MeshPhongMaterial({
+      color: 0x1a4d6e,
+      specular: 0xD4AF37,
+      shininess: 15,
+      bumpScale: 0.05,
+      opacity: 0.9,
+      transparent: true
     });
     
-    // Create particles
+    const earth = new THREE.Mesh(earthGeometry, earthMaterial);
+    scene.add(earth);
+    
+    // Add atmosphere glow effect
+    const atmosphereGeometry = new THREE.SphereGeometry(2.1, 32, 32);
+    const atmosphereMaterial = new THREE.MeshPhongMaterial({
+      color: 0x4a7fb5,
+      side: THREE.BackSide,
+      transparent: true,
+      opacity: 0.3
+    });
+    
+    const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
+    scene.add(atmosphere);
+    
+    // Create a wireframe overlay
+    const wireframeGeometry = new THREE.SphereGeometry(2.05, 16, 16);
+    const wireframeMaterial = new THREE.MeshBasicMaterial({ 
+      color: 0xD4AF37, 
+      wireframe: true, 
+      transparent: true, 
+      opacity: 0.2 
+    });
+    
+    const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+    scene.add(wireframe);
+    
+    // Create particles (stars)
     const particlesGeometry = new THREE.BufferGeometry();
     const particlesCount = 1500;
     const posArray = new Float32Array(particlesCount * 3);
     
     for (let i = 0; i < particlesCount * 3; i++) {
-      posArray[i] = (Math.random() - 0.5) * 15;
+      posArray[i] = (Math.random() - 0.5) * 20;
     }
     
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
@@ -51,32 +85,16 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    // Add light
+    // Add lighting
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     
     const pointLight = new THREE.PointLight(0xD4AF37, 1);
-    pointLight.position.set(5, 5, 5);
+    pointLight.position.set(5, 3, 5);
     scene.add(pointLight);
     
-    // Create a low-poly sphere
-    const icosahedronGeometry = new THREE.IcosahedronGeometry(1.5, 1);
-    const icosahedron = new THREE.Mesh(icosahedronGeometry, goldMaterial);
-    scene.add(icosahedron);
-    
-    // Create wireframe version of the shape
-    const wireframeMaterial = new THREE.MeshBasicMaterial({ 
-      color: 0xffffff, 
-      wireframe: true, 
-      transparent: true, 
-      opacity: 0.2 
-    });
-    const wireframeIcosahedron = new THREE.Mesh(icosahedronGeometry, wireframeMaterial);
-    wireframeIcosahedron.scale.set(1.1, 1.1, 1.1);
-    scene.add(wireframeIcosahedron);
-    
     // Position camera
-    camera.position.z = 4;
+    camera.position.z = 6;
     
     // Mouse interactivity
     let mouseX = 0;
@@ -107,17 +125,21 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       targetX = mouseX * 0.2;
       targetY = mouseY * 0.2;
       
-      icosahedron.rotation.y += 0.002;
-      icosahedron.rotation.x += 0.001;
-      wireframeIcosahedron.rotation.y += 0.001;
-      wireframeIcosahedron.rotation.x += 0.002;
+      // Rotate the earth
+      earth.rotation.y += 0.001;
+      wireframe.rotation.y += 0.001;
+      atmosphere.rotation.y += 0.001;
       
-      icosahedron.rotation.y += (targetX - icosahedron.rotation.y) * 0.05;
-      icosahedron.rotation.x += (targetY - icosahedron.rotation.x) * 0.05;
-      wireframeIcosahedron.rotation.y += (targetX - wireframeIcosahedron.rotation.y) * 0.03;
-      wireframeIcosahedron.rotation.x += (targetY - wireframeIcosahedron.rotation.x) * 0.03;
+      // Respond to mouse movement
+      earth.rotation.y += (targetX - earth.rotation.y) * 0.03;
+      earth.rotation.x += (targetY - earth.rotation.x) * 0.03;
+      wireframe.rotation.y = earth.rotation.y;
+      wireframe.rotation.x = earth.rotation.x;
+      atmosphere.rotation.y = earth.rotation.y;
+      atmosphere.rotation.x = earth.rotation.x;
       
-      particlesMesh.rotation.y += 0.0005;
+      // Slowly rotate particles
+      particlesMesh.rotation.y += 0.0003;
       
       renderer.render(scene, camera);
     };
@@ -128,15 +150,24 @@ const ThreeScene = ({ className }: ThreeSceneProps) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       containerRef.current?.removeChild(renderer.domElement);
-      scene.remove(icosahedron);
-      scene.remove(wireframeIcosahedron);
+      
+      // Cleanup scene
+      scene.remove(earth);
+      scene.remove(wireframe);
+      scene.remove(atmosphere);
       scene.remove(particlesMesh);
       
-      icosahedronGeometry.dispose();
-      goldMaterial.dispose();
-      wireframeMaterial.dispose();
+      // Dispose geometries and materials
+      earthGeometry.dispose();
+      wireframeGeometry.dispose();
+      atmosphereGeometry.dispose();
       particlesGeometry.dispose();
+      
+      earthMaterial.dispose();
+      wireframeMaterial.dispose();
+      atmosphereMaterial.dispose();
       particlesMaterial.dispose();
+      
       renderer.dispose();
     };
   }, []);
