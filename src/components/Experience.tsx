@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Calendar, Briefcase, GraduationCap } from 'lucide-react';
 
@@ -8,7 +9,7 @@ const Experience = () => {
     {
       title: "Intern",
       company: "Allianz Cloud",
-      period: "2024 - Present",
+      period: "Present",
       description: [
         "Focus on AI in Cybersecurity",
         "Worked on AI-driven threat detection models",
@@ -18,7 +19,7 @@ const Experience = () => {
     {
       title: "Academic Researcher",
       company: "Navrachana University",
-      period: "2022 - Present",
+      period: "Present",
       description: [
         "Focus on Machine Learning and Deep Learning in healthcare",
         "Published 2 academic papers at international conferences",
@@ -29,7 +30,7 @@ const Experience = () => {
     {
       title: "Independent AI Researcher",
       company: "Freelance",
-      period: "2021 - Present",
+      period: "Present",
       description: [
         "Conducted research on machine learning applications in healthcare and automation",
         "Developed AI models for real-world use cases",
@@ -39,7 +40,7 @@ const Experience = () => {
     {
       title: "Academic AI Research Consultant",
       company: "Freelance",
-      period: "2021 - Present",
+      period: "Present",
       description: [
         "Assisted businesses and academia with AI solutions and model optimization",
         "Provided consulting services for AI-driven projects",

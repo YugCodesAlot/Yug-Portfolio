@@ -14,12 +14,6 @@ const Hero = () => {
             "In pursuit of the unknown"
           </p>
         </div>
-        
-        <div className="mb-8 animate-fade-in" style={{animationDelay: '0.4s'}}>
-          <p className="text-white italic text-2xl md:text-3xl">
-            "telling machines what to do"
-          </p>
-        </div>
           
         <div className="three-canvas-container relative w-full h-[300px] md:h-[400px] mb-8">
           <ThreeScene />
