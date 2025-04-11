@@ -9,12 +9,6 @@ const Hero = () => {
       <SpaceBackground />
       
       <div className="container mx-auto px-4 relative z-10 text-center flex flex-col items-center">
-        <div className="mb-8 animate-fade-in" style={{animationDelay: '0.3s'}}>
-          <p className="text-gold italic text-3xl md:text-4xl lg:text-5xl">
-            "In pursuit of the unknown"
-          </p>
-        </div>
-          
         <div className="three-canvas-container relative w-full h-[300px] md:h-[400px] mb-8">
           <ThreeScene />
         </div>
