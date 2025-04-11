@@ -20,8 +20,7 @@ const Hero = () => {
         </div>
           
         <h1 className="heading-xl mb-8 animate-fade-in" style={{animationDelay: '0.5s'}}>
-          <span className="gold-gradient">Artificial Intelligence</span><br />
-          <span className="text-white">& Machine Learning Specialist</span>
+          <span className="gold-gradient">In pursuit of the unknown</span>
         </h1>
           
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in" style={{animationDelay: '0.7s'}}>

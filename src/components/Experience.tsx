@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Calendar, Briefcase, GraduationCap } from 'lucide-react';
 
@@ -9,7 +8,7 @@ const Experience = () => {
     {
       title: "Intern",
       company: "Allianz Cloud",
-      period: "Present",
+      period: "",
       description: [
         "Focus on AI in Cybersecurity",
         "Worked on AI-driven threat detection models",
@@ -19,7 +18,7 @@ const Experience = () => {
     {
       title: "Academic Researcher",
       company: "Navrachana University",
-      period: "Present",
+      period: "",
       description: [
         "Focus on Machine Learning and Deep Learning in healthcare",
         "Published 2 academic papers at international conferences",
@@ -30,7 +29,7 @@ const Experience = () => {
     {
       title: "Independent AI Researcher",
       company: "Freelance",
-      period: "Present",
+      period: "",
       description: [
         "Conducted research on machine learning applications in healthcare and automation",
         "Developed AI models for real-world use cases",
@@ -40,7 +39,7 @@ const Experience = () => {
     {
       title: "Academic AI Research Consultant",
       company: "Freelance",
-      period: "Present",
+      period: "",
       description: [
         "Assisted businesses and academia with AI solutions and model optimization",
         "Provided consulting services for AI-driven projects",
@@ -112,10 +111,12 @@ const Experience = () => {
                         <h3 className="text-xl font-bold text-white">{job.title}</h3>
                         <p className="text-gold">{job.company}</p>
                       </div>
-                      <div className="flex items-center mt-2 md:mt-0">
-                        <Calendar size={16} className="text-white/60 mr-2" />
-                        <span className="text-white/60">{job.period}</span>
-                      </div>
+                      {job.period && (
+                        <div className="flex items-center mt-2 md:mt-0">
+                          <Calendar size={16} className="text-white/60 mr-2" />
+                          <span className="text-white/60">{job.period}</span>
+                        </div>
+                      )}
                     </div>
                     
                     <ul className="list-disc pl-5 text-white/80 space-y-1">
